@@ -1,21 +1,30 @@
-variables:
-  projectDirectory: sample_project
 
-jobs:
-  - job: Android
-    pool:
-      vmImage: 'macOS-10.13'
-    steps:
-    - task: FlutterInstall@0
-    - task: FlutterBuild@0
-      inputs:
-        target: apk
-        projectDirectory: $(projectDirectory)
-    - task: FlutterTest@0
-      inputs:
-        projectDirectory: $(projectDirectory)
-    - task: CopyFiles@2
-      inputs:
-        contents: '**/*.apk'
-        targetFolder: '$(build.artifactStagingDirectory)'
-    - task: PublishBuildArtifacts@1
+pool:
+  vmImage: 'macOS-10.13'
+
+steps:
+- task: Gradle@2
+  inputs:
+    workingDirectory: ''
+    gradleWrapperFile: 'gradlew'
+    gradleOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    tasks: 'assembleDebug test'
+  displayName: gradlew assembleDebug test
+
+- task: CopyFiles@2
+  inputs:
+    contents: '**/*.apk'
+    targetFolder: '$(build.artifactStagingDirectory)'
+  displayName: Copy .apk files to artifact staging directory
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(build.artifactStagingDirectory)'
+    artifactName: 'drop'
+    artifactType: 'container'
+  displayName: Publish artifacts
