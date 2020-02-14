@@ -3,11 +3,12 @@ pool:
   vmImage: 'windows-2019'
 
 steps:
-- task: VSBuild@1
+- task: Gradle@2
   inputs:
-    solution: '**\*.sln'
-    platform: 'X86'
-    clean: true
-    maximumCpuCount: true
-    restoreNugetPackages: true
-    createLogFile: true
+    gradleWrapperFile: 'gradlew'
+    tasks: 'build'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    sonarQubeRunAnalysis: false
+    findBugsRunAnalysis: true
