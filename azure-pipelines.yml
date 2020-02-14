@@ -1,6 +1,6 @@
 
 pool:
-  vmImage: 'macOS-10.13'
+  vmImage: 'windows-2019'
 
 steps:
 - task: VSBuild@1
